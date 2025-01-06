@@ -50,41 +50,48 @@ namespace MiNa.InventorAddInDebugger.Common
         /// <returns></returns>
         public static IPictureDisp ToIPictureDisp(System.Drawing.Icon icon)
         {
-            return PictureDispConverter.OleCreatePictureIndirect((object)new PictureDispConverter.Pictdesc.Icon(icon),
+            return PictureDispConverter.OleCreatePictureIndirect(
+                new PictureDispConverter.PictDesc.Icon(icon),
                 ref PictureDispConverter._iPictureDispGuid, true);
         }
 
-        /// <summary>Converts an image into a IPictureDisp</summary>
+        /// <summary>Converts an Image into a IPictureDisp</summary>
         /// <param name="image"></param>
         /// <returns></returns>
         public static IPictureDisp ToIPictureDisp(Image image)
         {
             return PictureDispConverter.OleCreatePictureIndirect(
-                (object)new PictureDispConverter.Pictdesc.Bitmap(image is System.Drawing.Bitmap
+                new PictureDispConverter.PictDesc.Bitmap(image is System.Drawing.Bitmap
                     ? (System.Drawing.Bitmap)image
                     : new System.Drawing.Bitmap(image)), ref PictureDispConverter._iPictureDispGuid, true);
         }
 
         [DllImport("OleAut32.dll", PreserveSig = false)]
         private static extern IPictureDisp OleCreatePictureIndirect(
-            [MarshalAs(UnmanagedType.AsAny)] object picdesc,
+            PictDesc.Icon pictDescIcon,
             ref Guid iid,
             bool fOwn);
 
-        private static class Pictdesc
+        [DllImport("OleAut32.dll", PreserveSig = false)]
+        private static extern IPictureDisp OleCreatePictureIndirect(
+            PictDesc.Bitmap pictDescBitmap,
+            ref Guid iid,
+            bool fOwn);
+
+        private static class PictDesc
         {
-            public const short PictypeUninitialized = -1;
-            public const short PictypeNone = 0;
-            public const short PictypeBitmap = 1;
-            public const short PictypeMetafile = 2;
-            public const short PictypeIcon = 3;
-            public const short PictypeEnhmetafile = 4;
+            public const short PicTypeUninitialized = -1;
+            public const short PicTypeNone = 0;
+            public const short PicTypeBitmap = 1;
+            public const short PicTypeMetafile = 2;
+            public const short PicTypeIcon = 3;
+            public const short PicTypeEnhMetafile = 4;
 
             [StructLayout(LayoutKind.Sequential)]
             public class Icon
             {
-                internal int cbSizeOfStruct = Marshal.SizeOf(typeof(PictureDispConverter.Pictdesc.Icon));
-                internal int picType = 3;
+                internal int cbSizeOfStruct = Marshal.SizeOf(typeof(PictureDispConverter.PictDesc.Icon));
+                internal int picType = PicTypeIcon;
                 internal IntPtr hicon = IntPtr.Zero;
                 internal int unused1;
                 internal int unused2;
@@ -95,8 +102,8 @@ namespace MiNa.InventorAddInDebugger.Common
             [StructLayout(LayoutKind.Sequential)]
             public class Bitmap
             {
-                internal int cbSizeOfStruct = Marshal.SizeOf(typeof(PictureDispConverter.Pictdesc.Bitmap));
-                internal int picType = 1;
+                internal int cbSizeOfStruct = Marshal.SizeOf(typeof(PictureDispConverter.PictDesc.Bitmap));
+                internal int picType = PicTypeBitmap;
                 internal IntPtr hbitmap = IntPtr.Zero;
                 internal IntPtr hpal = IntPtr.Zero;
                 internal int unused;
