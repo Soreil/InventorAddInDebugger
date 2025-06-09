@@ -72,15 +72,16 @@ because it breaks the execution on the line in this command.
 
 # Settings
 
-![Settings](Documentation/img/Settings.png)
+![Settings](Documentation/img/Settings2.png)
 
 **Load from** - Allows you to read information from AddIn build or from .addin file and fill the fields below. 
 
-- **NET 48, NET8** - Navigate to the add-in build file. If the DLL file contains at least one add-in implementation, 
-the values are automatically extracted from this file. You can choose from two loaders for specific runtimes.
 - **\*.addin** - Navigate to .addin file related to the addin build. Builds are searched according to value in `<Assembly>` node
 in .addin file. If the relative path in `<Assembly>` node does't point to existing file, all potential files are listed and 
 you must select which one you want to use. Type FullName field is not filled in this case.
+
+- **NET 48, NET8** - **NOT AVAILABLE SINCE 2.0 BUILD** Navigate to the add-in build file. If the DLL file contains at least one add-in implementation, 
+the values are automatically extracted from this file. You can choose from two loaders for specific runtimes.
 
 
 **Assembly File** - Contains full file name of the original build of the project.
