@@ -17,9 +17,6 @@ namespace MiNa.InventorAddInDebugger.UI
             InitializeComponent();
 
             _referencesLoader = new ReferencesLoader();
-
-            //Disable NET 8 button on 4.8 Runtime
-            btnBrowseNet80.Enabled = Environment.Version.Major >= 8;
         }
 
         public AddInLoaderConfig Config
