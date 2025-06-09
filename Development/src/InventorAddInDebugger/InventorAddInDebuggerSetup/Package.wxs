@@ -16,8 +16,8 @@
 	<!--Installed product output folder-->
 	<!--TODO: Replace REFERENCED_PROJECT_NAME with name of the referenced installed project-->
 	<?define targetDir = $(var.InventorAddInDebugger.TargetDir)?>
-	<?define addInInfo48TargetDir = $(var.AddInInfo48.TargetDir)?>
-	<?define addInInfo80TargetDir = $(var.AddInInfo80.ProjectDir)bin\Release\net8.0\publish\?>
+	<!--<?define addInInfo48TargetDir = $(var.AddInInfo48.TargetDir)?>-->
+	<!--<?define addInInfo80TargetDir = $(var.AddInInfo80.ProjectDir)bin\Release\net8.0\publish\?>-->
 
 	<!--|                                        |-->
 	<!--|     End of Installer Configuration     |-->
@@ -87,12 +87,6 @@
 				<File Id="ADDINFILEALL" Source="$(var.targetDir)InventorAddInDebugger.addin" />
 			</Component>
 
-			<Component Id="AddInInfo48.exe" Directory="INSTALLFOLDER">
-				<File Id="AddInInfo48.exe" Source="$(var.addInInfo48TargetDir)AddInInfo48.exe" />
-			</Component>
-			<Component Id="AddInInfo80.exe" Directory="INSTALLFOLDER">
-				<File Id="AddInInfo80.exe" Source="$(var.addInInfo80TargetDir)AddInInfo80.exe" />
-			</Component>
 		</ComponentGroup>
 	</Fragment>
 

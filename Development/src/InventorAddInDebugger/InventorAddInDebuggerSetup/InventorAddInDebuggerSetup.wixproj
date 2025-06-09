@@ -1,14 +1,13 @@
 ﻿<Project Sdk="WixToolset.Sdk/5.0.1">
   <ItemGroup>
-    <ProjectReference Include="..\AddInInfo48\AddInInfo48.csproj" />
-    <ProjectReference Include="..\AddInInfo80\AddInInfo80.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Binary\AttachDebuggerCmd_Dark.ico" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="WixToolset.UI.wixext" Version="5.0.1" />
     <PackageReference Include="WixToolset.Util.wixext" Version="5.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\InventorAddInDebugger\InventorAddInDebugger.csproj" />
   </ItemGroup>
   <Target Name="RenameMsi" AfterTargets="AfterBuild">
     <Message Text="RenameMsi:" Importance="high" />
