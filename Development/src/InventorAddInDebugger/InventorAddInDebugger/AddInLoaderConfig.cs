@@ -1,33 +1,19 @@
 ﻿using System.Collections.Generic;
 
-namespace MiNa.InventorAddInDebugger
+namespace MiNa.InventorAddInDebugger;
+
+/// <summary>
+/// AddIn loader configuration
+/// </summary>
+/// <param name="AddInAssemblyFile"> Gets and sets the full file name of the original build of the AddIn </param>
+/// <param name="AddInClientId"> Gets and sets the ClientId of the AddIn </param>
+/// <param name="AddInFullName"> Gets and sets the type FullName of the AddIn </param>
+/// <param name="LoadOnStart"> Loads debugged AddIn when inventor starts </param>
+public class AddInLoaderConfig()
 {
-
-    /// <summary>
-    /// AddIn loader configuration
-    /// </summary>
-    public class AddInLoaderConfig
-    {
-        /// <summary>
-        /// Gets and sets the full file name of the original build of the AddIn
-        /// </summary>
-        public string AddInAssemblyFile { get; set; }
-
-        /// <summary>
-        /// Gets and sets the ClientId of the AddIn
-        /// </summary>
-        public string AddInClientId { get; set; }
-
-        /// <summary>
-        /// Gets and sets the type FullName of the AddIn
-        /// </summary>
-        public string AddInFullName { get; set; }
-
-        /// <summary>
-        /// Loads debugged AddIn when inventor starts
-        /// </summary>
-        public bool LoadOnStart { get; set; }
-
-        public List<AddInInfo> MruAddInInfos { get; set; } = new List<AddInInfo>();
-    }
+    public string AddInAssemblyFile { get; set; } = "";
+    public string AddInClientId { get; set; } = "";
+    public string AddInFullName { get; set; } = "";
+    public bool LoadOnStart { get; set; } = false;
+    public List<AddInInfo> MruAddInInfos { get; set; } = [];
 }

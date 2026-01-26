@@ -4,66 +4,67 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace MiNa.InventorAddInDebugger
+namespace MiNa.InventorAddInDebugger;
+
+/// <summary>
+/// Provides functionality for loading referenced assemblies
+/// </summary>
+public class ReferencesLoader
 {
+    private Dictionary<string, string>? _listOfAssemblies = null;
+    private string _lastBuildFolder = "";
+
     /// <summary>
-    /// Provides functionality for loading referenced assemblies
+    /// Creates new instance of ReferencesLoader
     /// </summary>
-    public class ReferencesLoader
+    public ReferencesLoader()
     {
-        private Dictionary<string, string> _listOfAssemblies;
-        private string _lastBuildFolder;
+        var currentDomain = AppDomain.CurrentDomain;
+        currentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+    }
 
-        /// <summary>
-        /// Creates new instance of ReferencesLoader
-        /// </summary>
-        public ReferencesLoader()
+    /// <summary>
+    /// Gets and sets the directory with the last build of AddIn
+    /// </summary>
+    public string LastBuildFolder
+    {
+        get => _lastBuildFolder;
+        set
         {
-            var currentDomain = AppDomain.CurrentDomain;
-            currentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            _lastBuildFolder = value;
+            LoadAssembliesFromDir();
         }
+    }
 
-        /// <summary>
-        /// Gets and sets the directory with the last build of AddIn
-        /// </summary>
-        public string LastBuildFolder
+    private Assembly? CurrentDomain_AssemblyResolve(object? sender, ResolveEventArgs args)
+    {
+        if (_listOfAssemblies == null) LoadAssembliesFromDir();
+
+        if (_listOfAssemblies == null) return null;
+
+        try
         {
-            get => _lastBuildFolder;
-            set
-            {
-                _lastBuildFolder = value;
-                LoadAssembliesFromDir();
-            }
+            var file = _listOfAssemblies[args.Name];
+            var assembly = Assembly.LoadFile(file);
+            return assembly;
         }
-
-        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        catch (Exception)
         {
-            if (_listOfAssemblies == null) LoadAssembliesFromDir();
-
-            try
-            {
-                var file = _listOfAssemblies[args.Name];
-                var assembly = Assembly.LoadFile(file);
-                return assembly;
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
+            return null;
         }
+    }
 
-        private void LoadAssembliesFromDir()
+    private void LoadAssembliesFromDir()
+    {
+        _listOfAssemblies = [];
+
+        var files = Directory.EnumerateFiles(LastBuildFolder, "*.dll", SearchOption.AllDirectories).ToArray();
+        foreach (var file in files)
         {
-            _listOfAssemblies = new Dictionary<string, string>();
-
-            var files = Directory.EnumerateFiles(LastBuildFolder, "*.dll", SearchOption.AllDirectories).ToArray();
-            foreach (var file in files)
-            {
-                var reflectionAssy = Assembly.LoadFile(file);
-                var fullName = reflectionAssy.FullName;
-                if (!_listOfAssemblies.ContainsKey(fullName))
-                    _listOfAssemblies.Add(fullName, file);
-            }
+            var reflectionAssy = Assembly.LoadFile(file);
+            var fullName = reflectionAssy.FullName;
+            if (fullName is not null)
+                _listOfAssemblies.TryAdd(fullName, file);
         }
     }
 }

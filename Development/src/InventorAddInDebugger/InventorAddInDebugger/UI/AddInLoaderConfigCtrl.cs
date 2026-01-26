@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+
 using MiNa.InventorAddInDebugger.Properties;
+
 using Environment = System.Environment;
 using Path = System.IO.Path;
 
@@ -9,7 +11,7 @@ namespace MiNa.InventorAddInDebugger.UI
 {
     public partial class AddInLoaderConfigCtrl : UserControl
     {
-        private AddInLoaderConfig _config;
+        private AddInLoaderConfig? _config;
         private ReferencesLoader _referencesLoader;
 
         public AddInLoaderConfigCtrl()
@@ -19,7 +21,7 @@ namespace MiNa.InventorAddInDebugger.UI
             _referencesLoader = new ReferencesLoader();
         }
 
-        public AddInLoaderConfig Config
+        public AddInLoaderConfig? Config
         {
             get => _config;
             set
@@ -47,7 +49,7 @@ namespace MiNa.InventorAddInDebugger.UI
 
         private void ConfigToControls()
         {
-            if (Config == null)
+            if (_config == null)
                 return;
 
             tbAssemblyFile.Text = _config.AddInAssemblyFile;
@@ -59,10 +61,18 @@ namespace MiNa.InventorAddInDebugger.UI
 
         private void ControlsToConfig()
         {
-            _config.AddInAssemblyFile = tbAssemblyFile.Text.Trim(' ', '"');
-            _config.AddInClientId = tbAddinClientId.Text.Trim(" {}".ToCharArray());
-            _config.AddInFullName = tbFullName.Text;
-            _config.LoadOnStart = cbLoadOnStart.Checked;
+            if (_config == null)
+                return;
+
+            var asm = tbAssemblyFile.Text.Trim(' ', '"');
+            var clid = tbAddinClientId.Text.Trim(" {}".ToCharArray());
+            var fn = tbFullName.Text;
+            var los = cbLoadOnStart.Checked;
+
+            _config.AddInAssemblyFile = asm;
+            _config.AddInClientId = clid;
+            _config.AddInFullName = fn;
+            _config.LoadOnStart = los;
         }
 
         private void LoadAddInInfo(AddInInfoLoader addInInfoLoader)
@@ -93,8 +103,8 @@ namespace MiNa.InventorAddInDebugger.UI
                     if (showDialog == DialogResult.OK)
                     {
                         tbAssemblyFile.Text = fd.FileName;
-                        tbAddinClientId.Text = selectAddInDlg.SelectedAddInInfo.ClientId;
-                        tbFullName.Text = selectAddInDlg.SelectedAddInInfo.FullName;
+                        tbAddinClientId.Text = selectAddInDlg.SelectedAddInInfo?.ClientId;
+                        tbFullName.Text = selectAddInDlg.SelectedAddInInfo?.FullName;
                     }
                     else
                     {
@@ -121,23 +131,26 @@ namespace MiNa.InventorAddInDebugger.UI
             var loader = new AddInFileInfoLoader();
             var addInInfo = loader.AddInInfo(fd.FileName);
 
-            if (string.IsNullOrEmpty(addInInfo.FullName))
+            if (addInInfo is null || string.IsNullOrEmpty(addInInfo.FullName))
                 MessageBox.Show(Resources.Msg_AddInNotFound, Resources.AddIn_DisplayName, MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
 
-            tbAddinClientId.Text = addInInfo.ClientId;
-            tbAssemblyFile.Text = addInInfo.FullName;
-            tbFullName.Text = "";
+            if (addInInfo is not null)
+            {
+                tbAddinClientId.Text = addInInfo.ClientId;
+                tbAssemblyFile.Text = addInInfo.FullName;
+                tbFullName.Text = "";
 
-            UpdateMruAddInInfos(addInInfo);
+                UpdateMruAddInInfos(addInInfo);
+            }
         }
 
         private void UpdateMruAddInInfos(AddInInfo addInInfo)
         {
-            Config.MruAddInInfos.RemoveAll(x =>
+            Config?.MruAddInInfos.RemoveAll(x =>
                 x.FullName.Equals(addInInfo.FullName, StringComparison.InvariantCultureIgnoreCase) &&
                 x.ClientId.Equals(addInInfo.ClientId, StringComparison.InvariantCultureIgnoreCase));
-            Config.MruAddInInfos.Insert(0, addInInfo);
+            Config?.MruAddInInfos.Insert(0, addInInfo);
         }
 
         private void cmbRecent_SelectedIndexChanged(object sender, EventArgs e)

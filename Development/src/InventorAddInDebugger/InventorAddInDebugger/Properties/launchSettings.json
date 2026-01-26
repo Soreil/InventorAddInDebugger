@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "inv2025": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files\\Autodesk\\Inventor 2025\\Bin\\Inventor.exe",
+      "commandLineArgs": "/language=ENU"
+    }
+  }
+}

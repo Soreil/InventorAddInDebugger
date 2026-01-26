@@ -13,7 +13,7 @@ namespace MiNa.InventorAddInDebugger.Common
         /// <param name="lightIcon">The light icon.</param>
         /// <param name="darkIcon">The dark icon.</param>
         /// <returns>When darkIcon is provided, active Inventor API is 25 or above and active theme is "DarkTheme", returns darkIcon. Otherwise returns lightIcon</returns>
-        public static Icon IconByTheme(this Inventor.Application inventor, Icon lightIcon, Icon darkIcon = null)
+        public static Icon IconByTheme(this Inventor.Application inventor, Icon lightIcon, Icon? darkIcon = null)
         {
             if (darkIcon == null)
                 return lightIcon;
@@ -55,7 +55,7 @@ namespace MiNa.InventorAddInDebugger.Common
             var pmPrompt = text;
             var pmButtons = (int)(buttons + (int)icon + (int)defaultButton);
             var pmTitle = string.IsNullOrEmpty(caption) ? null : (object)caption;
-            object pmDefaultAnswer = null;
+            object? pmDefaultAnswer = null;
             var pmRestrictions = restrictions;
             var pmPromptStrings = promptStrings;
             return (DialogResult)inventor.CommandManager.PromptMessage(pmPrompt, pmButtons, pmTitle, pmDefaultAnswer,

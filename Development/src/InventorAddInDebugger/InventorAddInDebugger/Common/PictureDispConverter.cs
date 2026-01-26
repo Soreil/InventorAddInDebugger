@@ -15,9 +15,9 @@ namespace MiNa.InventorAddInDebugger.Common
         /// <param name="pictureDisp">Converted icon</param>
         /// <returns>Returns Image if pictureDisp.Type=3. Otherwise returns null</returns>
         /// <remarks></remarks>
-        public static System.Drawing.Icon PictureDispToIcon(IPictureDisp pictureDisp)
+        public static System.Drawing.Icon? PictureDispToIcon(IPictureDisp pictureDisp)
         {
-            System.Drawing.Icon icon = (System.Drawing.Icon)null;
+            System.Drawing.Icon? icon = null;
             if (pictureDisp != null && pictureDisp.Type == (short)3)
                 icon = System.Drawing.Icon.FromHandle(new IntPtr(pictureDisp.Handle));
             return icon;
@@ -27,9 +27,9 @@ namespace MiNa.InventorAddInDebugger.Common
         /// <param name="pictureDisp">Converted image</param>
         /// <returns>Returns Image if pictureDisp.Type=1. Otherwise returns null</returns>
         /// <remarks></remarks>
-        public static Image PictureDispToImage(IPictureDisp pictureDisp)
+        public static Image? PictureDispToImage(IPictureDisp pictureDisp)
         {
-            Image image = (Image)null;
+            Image? image = null;
             if (pictureDisp != null)
             {
                 if (pictureDisp.Type == (short)1)

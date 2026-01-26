@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
+
 using MiNa.InventorAddInDebugger.Properties;
 using MiNa.InventorAddInDebugger.UI;
 
@@ -37,9 +39,11 @@ namespace MiNa.InventorAddInDebugger
             };
 
             var proc = Process.Start(startInfo);
+            if (proc is null) return addIns;
+
             while (!proc.StandardOutput.EndOfStream)
             {
-                string line = proc.StandardOutput.ReadLine();
+                string line = proc.StandardOutput.ReadLine() ?? "";
                 sb.Add(line);
             }
 
@@ -64,8 +68,9 @@ namespace MiNa.InventorAddInDebugger
 
         private string GetSettingsExe()
         {
-            return Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                _addInInfoExe);
+            var loc = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
+                throw new InvalidOperationException("Cannot determine executing assembly location");
+            return Path.Combine(loc, _addInInfoExe);
         }
     }
 
@@ -81,31 +86,31 @@ namespace MiNa.InventorAddInDebugger
         /// </summary>
         /// <param name="addinFile">Full path to the .addin file</param>
         /// <returns></returns>
-        public AddInInfo AddInInfo(string addinFile)
+        public AddInInfo? AddInInfo(string addinFile)
         {
             var addinXml = new XmlDocument();
             addinXml.Load(addinFile);
             if (addinXml.DocumentElement == null)
                 return null;
 
-            string clientId = addinXml.DocumentElement["ClientId"]?.InnerText; ;
-            string assembly = addinXml.DocumentElement["Assembly"]?.InnerText;
-            string fullName = GetFullName(addinFile, assembly);
-            var addInInfo = new AddInInfo(fullName, clientId);
+            string clientId = addinXml.DocumentElement["ClientId"]?.InnerText ?? "";
+            string assembly = addinXml.DocumentElement["Assembly"]?.InnerText ?? "";
+            string? fullName = GetFullName(addinFile, assembly);
+            var addInInfo = new AddInInfo(fullName ?? "", clientId);
             return addInInfo;
         }
 
-        private string GetFullName(string addinFile, string assembly)
+        private string? GetFullName(string addinFile, string assembly)
         {
             //Contains full file name
             if (Path.IsPathRooted(assembly)) return assembly;
 
-            string addinFileDirectory = Path.GetDirectoryName(addinFile);
+            string addinFileDirectory = Path.GetDirectoryName(addinFile) ?? "";
             string expectedFullName = Path.Combine(addinFileDirectory, assembly);
             if (File.Exists(expectedFullName))
                 return expectedFullName;
 
-            string expectedRootDir = Path.GetDirectoryName(expectedFullName);
+            string expectedRootDir = Path.GetDirectoryName(expectedFullName) ?? "";
             string dllFileName = Path.GetFileName(expectedFullName);
             string[] foundDlls = Directory.EnumerateFiles(expectedRootDir, dllFileName, SearchOption.AllDirectories).ToArray();
             switch (foundDlls.Length)
@@ -120,7 +125,7 @@ namespace MiNa.InventorAddInDebugger
 
         }
 
-        private string SelectDll(string rootDir, string[] foundDlls)
+        private string? SelectDll(string rootDir, string[] foundDlls)
         {
             var selectDllDlg = new SelectDllDlg() { RootDir = rootDir, FoundDlls = foundDlls };
             var dialogResult = selectDllDlg.ShowDialog();

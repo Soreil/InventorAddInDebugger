@@ -5,9 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+
 using Inventor;
+
 using MiNa.InventorAddInDebugger.Common;
 using MiNa.InventorAddInDebugger.Properties;
+
 using File = System.IO.File;
 using Path = System.IO.Path;
 
@@ -20,10 +23,10 @@ namespace MiNa.InventorAddInDebugger
     {
         private readonly ApplicationAddInSite _addInSiteObject;
         private readonly ReferencesLoader _referencesLoader;
-        private Application _inventor;
+        private readonly Application _inventor;
 
-        private ApplicationAddInServer _addInServer;
-        private bool _firstTime = true;
+        private ApplicationAddInServer? _addInServer;
+        private readonly bool _firstTime = true;
         private bool _isActivated;
 
         /// <summary>
@@ -50,7 +53,7 @@ namespace MiNa.InventorAddInDebugger
         /// <summary>
         /// Gets the full file name of the last available AddIn version
         /// </summary>
-        public string LastVersionFile { get; private set; }
+        public string? LastVersionFile { get; private set; }
 
         private AddInLoaderConfig Config => StandardAddInServer.Config;
 
@@ -106,13 +109,15 @@ namespace MiNa.InventorAddInDebugger
         /// <param name="versionDllFullFileName">Returns the full file name of the last version build.</param>
         /// <returns></returns>
         /// <exception cref="FileNotFoundException"></exception>
-        public bool IsNewVersionAvailable(string buildDir, string dllFileName, out string versionDllFullFileName)
+        public static bool IsNewVersionAvailable(string buildDir, string dllFileName, out string versionDllFullFileName)
         {
             var dllFullFileName = Path.Combine(buildDir, dllFileName);
             if (!File.Exists(dllFullFileName))
                 throw new FileNotFoundException("Add-in assembly file not found.", dllFullFileName);
 
             var versionInfo = FileVersionInfo.GetVersionInfo(dllFullFileName);
+            if (versionInfo.FileVersion == null)
+                throw new InvalidOperationException("Cannot determine file version.");
 
             var versionDir = Path.Combine($"{buildDir}Versions", versionInfo.FileVersion);
             versionDllFullFileName = Path.Combine(versionDir, dllFileName);
@@ -153,7 +158,9 @@ namespace MiNa.InventorAddInDebugger
                     if (attribute.AttributeType != typeof(GuidAttribute)) continue;
                     if (attribute.ConstructorArguments.Count <= 0) continue;
 
-                    var clientId = attribute.ConstructorArguments[0].Value?.ToString().ToLowerInvariant();
+                    var clientId = attribute.ConstructorArguments[0].Value?.ToString()?.ToLowerInvariant();
+                    if (clientId == null || definedType.FullName == null) continue;
+
                     addIns.Add(new AddInInfo(definedType.FullName, clientId));
                 }
             }
@@ -167,16 +174,19 @@ namespace MiNa.InventorAddInDebugger
         ///     AddInAssemblyFile and AddInClientId
         /// </summary>
         /// <returns></returns>
-        private ApplicationAddInServer GetStandardAddInServer()
+        private ApplicationAddInServer? GetStandardAddInServer()
         {
             if (string.IsNullOrWhiteSpace(AddInAssemblyFile))
                 return null;
 
             var buildDir = Path.GetDirectoryName(AddInAssemblyFile);
+            if (buildDir == null) return null;
+
             var lastBuild = SearchLastBuild(buildDir,
                 Path.GetFileName(AddInAssemblyFile));
+            if (lastBuild == null) return null;
 
-            _referencesLoader.LastBuildFolder = Path.GetDirectoryName(lastBuild);
+            _referencesLoader.LastBuildFolder = Path.GetDirectoryName(lastBuild) ?? "";
 
             var firstOrDefault = GetAddInsFromAssembly(lastBuild).FirstOrDefault(x => x.ClientId.Equals(AddInClientId, StringComparison.InvariantCultureIgnoreCase));
             if (firstOrDefault == null)
@@ -196,7 +206,9 @@ namespace MiNa.InventorAddInDebugger
                 return versionDllFullFileName;
 
             // Create directory with new build
-            var lastVersionDir = Path.GetDirectoryName(versionDllFullFileName);
+            var lastVersionDir = Path.GetDirectoryName(versionDllFullFileName) ??
+                throw new InvalidOperationException("Cannot determine last version directory.");
+
             Directory.CreateDirectory(lastVersionDir);
             CopyFilesRecursively(buildDir, lastVersionDir);
             return versionDllFullFileName;

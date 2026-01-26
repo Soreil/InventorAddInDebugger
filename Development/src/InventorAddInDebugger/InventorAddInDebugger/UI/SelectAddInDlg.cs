@@ -7,7 +7,7 @@ namespace MiNa.InventorAddInDebugger.UI
 {
     internal partial class SelectAddInDlg : Form
     {
-        private List<AddInInfo> _addIns;
+        private List<AddInInfo> _addIns = [];
 
         public SelectAddInDlg()
         {
@@ -28,7 +28,7 @@ namespace MiNa.InventorAddInDebugger.UI
             }
         }
 
-        public AddInInfo SelectedAddInInfo
+        public AddInInfo? SelectedAddInInfo
         {
             get => listBox1.SelectedItem as AddInInfo;
             set => listBox1.SelectedItem = value;

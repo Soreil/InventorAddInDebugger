@@ -9,7 +9,7 @@ namespace SampleAddInModule
 {
     public class Info
     {
-        public static string GetMessage => "SampleAddInModuleNet8\t" + GetVersion;
+        public static string GetMessage => $"SampleAddInModuleNet8\t testing new build \t{GetVersion}";
         static string GetVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
     }
 }

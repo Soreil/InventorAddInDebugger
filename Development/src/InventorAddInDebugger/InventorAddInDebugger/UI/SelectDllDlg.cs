@@ -1,13 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+
 using MiNa.InventorAddInDebugger.Properties;
 
 namespace MiNa.InventorAddInDebugger.UI
 {
     public partial class SelectDllDlg : Form
     {
-        private string[] foundDlls;
+        private string[] foundDlls = [];
 
         public SelectDllDlg()
         {
@@ -25,9 +26,9 @@ namespace MiNa.InventorAddInDebugger.UI
             }
         }
 
-        public string RootDir { get; set; }
+        public string? RootDir { get; set; }
 
-        public string SelectedDll =>
+        public string? SelectedDll =>
             listView1.SelectedItems.Count > 0 ? listView1.SelectedItems[0].SubItems[1].Text : null;
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -44,13 +45,18 @@ namespace MiNa.InventorAddInDebugger.UI
 
         private void PopulateListView()
         {
+            if (RootDir is null) return;
+
             listView1.Items.Clear();
             if (FoundDlls.Length == 0)
                 return;
 
             foreach (string foundDll in FoundDlls)
             {
-                string relativePath = Path.GetDirectoryName(foundDll).Replace(RootDir, "");
+                var dirName = Path.GetDirectoryName(foundDll);
+                if (dirName is null) continue;
+
+                string relativePath = dirName.Replace(RootDir, "");
                 listView1.Items.Add(new ListViewItem(new[]
                 {
                     //relativePath,

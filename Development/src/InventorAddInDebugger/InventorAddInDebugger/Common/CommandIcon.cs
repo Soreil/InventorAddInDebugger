@@ -19,15 +19,15 @@ namespace MiNa.InventorAddInDebugger.Common
         public System.Drawing.Icon Ico32 => new System.Drawing.Icon(this.SourceIcon, 32, 32);
 
         /// <summary>Returns 32 pix icon converted to IPictureDisp</summary>
-        public IPictureDisp LargeRibboIcon => this.ToIPictureDisp(CommandIcon.IconSizeEnum.LargeRibbon);
+        public IPictureDisp? LargeRibboIcon => this.ToIPictureDisp(CommandIcon.IconSizeEnum.LargeRibbon);
 
         /// <summary>Returns 16 pix icon converted to IPictureDisp</summary>
-        public IPictureDisp SmallRibboIcon => this.ToIPictureDisp(CommandIcon.IconSizeEnum.SmallRibbon);
+        public IPictureDisp? SmallRibboIcon => this.ToIPictureDisp(CommandIcon.IconSizeEnum.SmallRibbon);
 
         /// <summary>Source icon</summary>
         public System.Drawing.Icon SourceIcon { get; set; }
 
-        private IPictureDisp ToIPictureDisp(CommandIcon.IconSizeEnum size)
+        private IPictureDisp? ToIPictureDisp(CommandIcon.IconSizeEnum size)
         {
             try
             {
@@ -40,12 +40,12 @@ namespace MiNa.InventorAddInDebugger.Common
                     case CommandIcon.IconSizeEnum.CommandBar:
                         return PictureDispConverter.ToIPictureDisp(this.Ico24);
                     default:
-                        return (IPictureDisp)null;
+                        return null;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return (IPictureDisp)null;
+                return null;
             }
         }
 

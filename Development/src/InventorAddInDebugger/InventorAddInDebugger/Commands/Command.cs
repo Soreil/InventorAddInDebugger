@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
+
 using Inventor;
+
 using MiNa.InventorAddInDebugger.Common;
 using MiNa.InventorAddInDebugger.Properties;
+
 using Application = Inventor.Application;
 
 namespace MiNa.InventorAddInDebugger.Commands
@@ -21,7 +24,7 @@ namespace MiNa.InventorAddInDebugger.Commands
 
 
         /// <summary>Command button</summary>
-        public ButtonDefinition ButtonDefinition { get; private set; }
+        public ButtonDefinition? ButtonDefinition { get; private set; }
 
         /// <summary>
         ///     Returns wrapper for display form as child window of Inventor
@@ -44,12 +47,12 @@ namespace MiNa.InventorAddInDebugger.Commands
             string description = "",
             string toolTip = "",
             CommandTypesEnum commandType = CommandTypesEnum.kQueryOnlyCmdType,
-            string clientId = null,
-            CommandIcon icon = null,
+            string? clientId = null,
+            CommandIcon? icon = null,
             bool autoAddToGui = false,
             ButtonDisplayEnum buttonDisplayType = ButtonDisplayEnum.kDisplayTextInLearningMode)
         {
-            string internalName = GetType().FullName;
+            string internalName = GetType().FullName ?? "";
             ButtonDefinition = ThisApplication.CommandManager.ControlDefinitions.AddButtonDefinition(displayName,
                 internalName, commandType, clientId, description, toolTip, icon?.SmallRibboIcon, icon?.LargeRibboIcon,
                 buttonDisplayType);
@@ -64,8 +67,11 @@ namespace MiNa.InventorAddInDebugger.Commands
         {
             try
             {
-                ButtonDefinition.OnExecute -= ButtonDefinition_OnExecute;
-                ButtonDefinition.Delete();
+                if (ButtonDefinition is not null)
+                {
+                    ButtonDefinition.OnExecute -= ButtonDefinition_OnExecute;
+                    ButtonDefinition.Delete();
+                }
             }
             finally
             {
@@ -77,6 +83,9 @@ namespace MiNa.InventorAddInDebugger.Commands
         /// <param name="context"></param>
         protected virtual void ButtonDefinition_OnExecute(NameValueMap context)
         {
+            if (ButtonDefinition is null)
+                return;
+
             ButtonDefinition.Pressed = true;
             try
             {
@@ -85,7 +94,7 @@ namespace MiNa.InventorAddInDebugger.Commands
             catch (Exception ex)
             {
                 ThisApplication.PromptBox(Resources.Msg_CommandFailedGeneral, Resources.AddIn_DisplayName,
-                    promptStrings: new[] { ButtonDefinition.DisplayName, ex.Message });
+                    promptStrings: [ButtonDefinition.DisplayName, ex.Message]);
             }
             finally
             {
