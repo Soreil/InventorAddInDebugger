@@ -24,7 +24,7 @@ namespace MiNa.InventorAddInDebugger.UI
                 _addIns = value;
                 listBox1.Items.Clear();
                 if (value != null && value.Count > 0)
-                    listBox1.Items.AddRange(value.ToArray());
+                    listBox1.Items.AddRange([.. value]);
             }
         }
 

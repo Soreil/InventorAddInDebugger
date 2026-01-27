@@ -31,17 +31,13 @@ namespace MiNa.InventorAddInDebugger.Common
         {
             try
             {
-                switch (size)
+                return size switch
                 {
-                    case CommandIcon.IconSizeEnum.SmallRibbon:
-                        return PictureDispConverter.ToIPictureDisp(this.Ico16);
-                    case CommandIcon.IconSizeEnum.LargeRibbon:
-                        return PictureDispConverter.ToIPictureDisp(this.Ico32);
-                    case CommandIcon.IconSizeEnum.CommandBar:
-                        return PictureDispConverter.ToIPictureDisp(this.Ico24);
-                    default:
-                        return null;
-                }
+                    CommandIcon.IconSizeEnum.SmallRibbon => PictureDispConverter.ToIPictureDisp(this.Ico16),
+                    CommandIcon.IconSizeEnum.LargeRibbon => PictureDispConverter.ToIPictureDisp(this.Ico32),
+                    CommandIcon.IconSizeEnum.CommandBar => PictureDispConverter.ToIPictureDisp(this.Ico24),
+                    _ => null,
+                };
             }
             catch (Exception)
             {
