@@ -4,33 +4,25 @@ using MiNa.InventorAddInDebugger.Common;
 using MiNa.InventorAddInDebugger.Properties;
 using Application = Inventor.Application;
 
-namespace MiNa.InventorAddInDebugger.Commands
+namespace MiNa.InventorAddInDebugger.Commands;
+
+class ReloadAddInCmd(Application inventor, AddInLoader addInLoader) : Command(inventor)
 {
-    class ReloadAddInCmd : Command
+    protected override void ExecuteCommand(NameValueMap context)
     {
-        private readonly AddInLoader _addInLoader;
-
-        public ReloadAddInCmd(Application inventor, AddInLoader addInLoader) : base(inventor)
+        try
         {
-            this._addInLoader = addInLoader;
+            addInLoader.Deactivate();
+            addInLoader.Activate();
+            ThisApplication.BubbleTip(Resources.Msg_SuccessfullyReloaded);
         }
-
-        protected override void ExecuteCommand(NameValueMap context)
+        catch (System.Exception ex)
         {
-            try
-            {
-                _addInLoader.Deactivate();
-                _addInLoader.Activate();
-                ThisApplication.BubbleTip(Resources.Msg_SuccessfullyReloaded);
-            }
-            catch (System.Exception ex)
-            {
-                ThisApplication.PromptBox(Resources.Msg_ReloadOfAddInfailed,
-                    Resources.AddIn_DisplayName,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error,
-                    promptStrings: new[] { ex.ToString() });
-            }
+            ThisApplication.PromptBox(Resources.Msg_ReloadOfAddInfailed,
+                Resources.AddIn_DisplayName,
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error,
+                promptStrings: [ex.ToString()]);
         }
     }
 }

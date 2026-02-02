@@ -4,32 +4,24 @@ using MiNa.InventorAddInDebugger.Common;
 using MiNa.InventorAddInDebugger.Properties;
 using Application = Inventor.Application;
 
-namespace MiNa.InventorAddInDebugger.Commands
+namespace MiNa.InventorAddInDebugger.Commands;
+
+class DeactivateAddInCmd(Application inventor, AddInLoader addInLoader) : Command(inventor)
 {
-    class DeactivateAddInCmd : Command
+    protected override void ExecuteCommand(NameValueMap context)
     {
-        private readonly AddInLoader _addInLoader;
-
-        public DeactivateAddInCmd(Application inventor, AddInLoader addInLoader) : base(inventor)
+        try
         {
-            this._addInLoader = addInLoader;
+            addInLoader.Deactivate();
+            ThisApplication.BubbleTip(Resources.Msg_SuccessfullyDeactivated);
         }
-
-        protected override void ExecuteCommand(NameValueMap context)
+        catch (System.Exception ex)
         {
-            try
-            {
-                _addInLoader.Deactivate();
-                ThisApplication.BubbleTip(Resources.Msg_SuccessfullyDeactivated);
-            }
-            catch (System.Exception ex)
-            {
-                ThisApplication.PromptBox(Resources.Msg_DeactivationOfAddInFailed,
-                    Resources.AddIn_DisplayName,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error,
-                    promptStrings: new[] { ex.ToString() });
-            }
+            ThisApplication.PromptBox(Resources.Msg_DeactivationOfAddInFailed,
+                Resources.AddIn_DisplayName,
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error,
+                promptStrings: [ex.ToString()]);
         }
     }
 }

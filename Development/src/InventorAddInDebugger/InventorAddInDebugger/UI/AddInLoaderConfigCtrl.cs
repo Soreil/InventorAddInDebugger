@@ -129,7 +129,7 @@ namespace MiNa.InventorAddInDebugger.UI
             if (dialogResult != DialogResult.OK) return;
 
             var loader = new AddInFileInfoLoader();
-            var addInInfo = loader.AddInInfo(fd.FileName);
+            var addInInfo = AddInFileInfoLoader.AddInInfo(fd.FileName);
 
             if (addInInfo is null || string.IsNullOrEmpty(addInInfo.FullName))
                 MessageBox.Show(Resources.Msg_AddInNotFound, Resources.AddIn_DisplayName, MessageBoxButtons.OK,

@@ -44,7 +44,8 @@ public class StandardAddInServer : ApplicationAddInServer
     private ReloadAddInCmd? _reloadAddInCmd;
     private SettingsCmd? _settingsCmd;
 
-    internal static AddInLoaderConfig Config { get; private set; } = null!;
+    //This configuration is set during Activation of the AddIn
+    internal static AddInLoaderConfig Config { get; private set; } = new();
 
     private void AddButtonsToPanel(RibbonPanel panel)
     {
@@ -67,7 +68,7 @@ public class StandardAddInServer : ApplicationAddInServer
 
     private void AddButtonsToRibbon()
     {
-        const string intNamePrefix = "CsMichaelNavara.InventorAddInDebugger";
+        const string internalNamePrefix = "CsMichaelNavara.InventorAddInDebugger";
 
         Debug.Assert(_inventor is not null);
 
@@ -78,22 +79,22 @@ public class StandardAddInServer : ApplicationAddInServer
 
         var zeroDocRibbonPanel = zeroDocRibbonTab.RibbonPanels.Add(
             Resources.AddIn_DisplayName,
-            $"{intNamePrefix}.ZeroDocPanel",
+            $"{internalNamePrefix}.ZeroDocPanel",
             ClientId);
 
         var partRibbonPanel = partRibbonTab.RibbonPanels.Add(
             Resources.AddIn_DisplayName,
-            $"{intNamePrefix}.PartPanel",
+            $"{internalNamePrefix}.PartPanel",
             ClientId);
 
         var assemblyRibbonPanel = assemblyRibbonTab.RibbonPanels.Add(
             Resources.AddIn_DisplayName,
-            $"{intNamePrefix}.AssemblyPanel",
+            $"{internalNamePrefix}.AssemblyPanel",
             ClientId);
 
         var drawingRibbonPanel = drawingRibbonTab.RibbonPanels.Add(
             Resources.AddIn_DisplayName,
-            $"{intNamePrefix}.DrawingPanel",
+            $"{internalNamePrefix}.DrawingPanel",
             ClientId);
 
         _ribbonPanels =
@@ -110,6 +111,7 @@ public class StandardAddInServer : ApplicationAddInServer
         AddButtonsToPanel(drawingRibbonPanel);
     }
 
+    //These commands are later tied to buttons inside of the Inventor Ribbon UI
     private void CreateCommands()
     {
         bool autoAddToGui = false;

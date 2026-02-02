@@ -2,17 +2,12 @@
 using Inventor;
 using Application = Inventor.Application;
 
-namespace MiNa.InventorAddInDebugger.Commands
-{
-    internal class AttachDebuggerCmd : Command
-    {
-        public AttachDebuggerCmd(Application inventor) : base(inventor)
-        {
-        }
+namespace MiNa.InventorAddInDebugger.Commands;
 
-        protected override void ExecuteCommand(NameValueMap context)
-        {
-            Debugger.Launch();
-        }
+internal class AttachDebuggerCmd(Application inventor) : Command(inventor)
+{
+    protected override void ExecuteCommand(NameValueMap context)
+    {
+        Debugger.Launch();
     }
 }

@@ -19,22 +19,14 @@ namespace MiNa.InventorAddInDebugger;
 /// <summary>
 /// Loader for child plugins
 /// </summary>
-internal class AddInLoader
+internal class AddInLoader(ApplicationAddInSite addInSiteObject)
 {
-    private readonly ApplicationAddInSite _addInSiteObject;
-    private readonly ReferencesLoader _referencesLoader;
-    private readonly Application _inventor;
+    private readonly ReferencesLoader _referencesLoader = new();
+    private readonly Application _inventor = addInSiteObject.Application;
 
     private ApplicationAddInServer? _addInServer;
     private readonly bool _firstTime = true;
     private bool _isActivated;
-
-    public AddInLoader(ApplicationAddInSite addInSiteObject)
-    {
-        _addInSiteObject = addInSiteObject;
-        _inventor = addInSiteObject.Application;
-        _referencesLoader = new ReferencesLoader();
-    }
 
     /// <summary>
     /// Gets the full file name of the original build of the AddIn
@@ -73,7 +65,7 @@ internal class AddInLoader
             return;
         }
 
-        _addInServer.Activate(_addInSiteObject, _firstTime);
+        _addInServer.Activate(addInSiteObject, _firstTime);
         _isActivated = true;
     }
 
@@ -163,7 +155,6 @@ internal class AddInLoader
 
         return addIns;
     }
-
 
     /// <summary>
     ///     Returns new instance of Inventor.ApplicationAddInServer defined by

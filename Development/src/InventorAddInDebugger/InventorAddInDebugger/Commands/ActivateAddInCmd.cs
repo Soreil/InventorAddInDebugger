@@ -1,35 +1,30 @@
 ﻿using System.Windows.Forms;
+
 using Inventor;
+
 using MiNa.InventorAddInDebugger.Common;
 using MiNa.InventorAddInDebugger.Properties;
+
 using Application = Inventor.Application;
 
-namespace MiNa.InventorAddInDebugger.Commands
+namespace MiNa.InventorAddInDebugger.Commands;
+
+class ActivateAddInCmd(Application inventor, AddInLoader addInLoader) : Command(inventor)
 {
-    class ActivateAddInCmd : Command
+    protected override void ExecuteCommand(NameValueMap context)
     {
-        private readonly AddInLoader _addInLoader;
-
-        public ActivateAddInCmd(Application inventor, AddInLoader addInLoader) : base(inventor)
+        try
         {
-            this._addInLoader = addInLoader;
+            addInLoader.Activate();
+            ThisApplication.BubbleTip(Resources.Msg_SuccessfullyActivated);
         }
-
-        protected override void ExecuteCommand(NameValueMap context)
+        catch (System.Exception ex)
         {
-            try
-            {
-                _addInLoader.Activate();
-                ThisApplication.BubbleTip(Resources.Msg_SuccessfullyActivated);
-            }
-            catch (System.Exception ex)
-            {
-                ThisApplication.PromptBox(Resources.Msg_ActivationOfAddInFailed,
-                    Resources.AddIn_DisplayName,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error,
-                    promptStrings: new[] { ex.ToString() });
-            }
+            ThisApplication.PromptBox(Resources.Msg_ActivationOfAddInFailed,
+                Resources.AddIn_DisplayName,
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error,
+                promptStrings: [ex.ToString()]);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace MiNa.InventorAddInDebugger;
 /// <param name="AddInClientId"> Gets and sets the ClientId of the AddIn </param>
 /// <param name="AddInFullName"> Gets and sets the type FullName of the AddIn </param>
 /// <param name="LoadOnStart"> Loads debugged AddIn when inventor starts </param>
-public class AddInLoaderConfig()
+public class AddInLoaderConfig
 {
     public string AddInAssemblyFile { get; set; } = "";
     public string AddInClientId { get; set; } = "";

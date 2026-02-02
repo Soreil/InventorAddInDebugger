@@ -2,22 +2,14 @@
 using Inventor;
 using Application = Inventor.Application;
 
-namespace MiNa.InventorAddInDebugger.Commands
+namespace MiNa.InventorAddInDebugger.Commands;
+
+internal class OpenBuildFolderCmd(Application inventor, AddInLoader addInLoader) : Command(inventor)
 {
-    internal class OpenBuildFolderCmd : Command
+    protected override void ExecuteCommand(NameValueMap context)
     {
-        private readonly AddInLoader _addInLoader;
-
-        public OpenBuildFolderCmd(Application inventor, AddInLoader addInLoader) : base(inventor)
-        {
-            _addInLoader = addInLoader;
-        }
-
-        protected override void ExecuteCommand(NameValueMap context)
-        {
-            var startInfo = new ProcessStartInfo("explorer.exe", $"/select,\"{_addInLoader.LastVersionFile}\"")
-                { UseShellExecute = true };
-            Process.Start(startInfo);
-        }
+        var startInfo = new ProcessStartInfo("explorer.exe", $"/select,\"{addInLoader.LastVersionFile}\"")
+            { UseShellExecute = true };
+        Process.Start(startInfo);
     }
 }
